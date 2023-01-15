@@ -28,7 +28,17 @@ PYBIND11_MODULE(py_kmc_api, m) {
 		.def(py::init<>())
 		.def_readwrite("value", &LongKmerRepresentation::value);
 
-	py::class_<CountVec>(m, "CountVec")
+	py::class_<CountVec>(m, "CountVec", py::buffer_protocol())
+		.def_buffer([](CountVec &c) -> py::buffer_info {
+			return py::buffer_info(
+				c.value.data(),
+				sizeof(uint32_t),
+				py::format_descriptor<uint32_t>::format(),
+				1, 
+				{c.value.size()}, 
+				{sizeof(uint32_t)}
+			);
+		})
 		.def(py::init<>())
 		.def_readwrite("value", &CountVec::value);
 
